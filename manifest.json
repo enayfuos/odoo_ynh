@@ -1,6 +1,6 @@
 {
-    "name": "YunoHost example app",
-    "id": "ynhexample",
+    "name": "Odoo",
+    "id": "odoo",
     "packaging_format": 1,
     "description": {
         "en": "Example package for YunoHost application.",

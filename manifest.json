@@ -1,54 +1,74 @@
 {
-    "name": "Odoo",
-    "id": "odoo",
+    "name": "YunoHost example app",
+    "id": "ynhexample",
+    "packaging_format": 1,
     "description": {
-        "en": "Odoo is a suite of business apps (ERP: CRM, Accounting, Point of Sale, HR, Purchases...).",
-        "fr": "Odoo est une collection d'apps de gestion d'entreprise (ERP : CRM, Comptabilité, Point de Vente, RH, Achats, ...)."
+        "en": "Example package for YunoHost application.",
+        "fr": "Exemple de package d’application pour YunoHost."
     },
-    "developer": {
-        "name": "scith"
+    "url": "https://example.com",
+    "license": "free",
+    "maintainer": {
+        "name": "John doe",
+        "email": "john.doe@example.com",
+        "url": "http://example.com"
     },
-    "multi_instance": "true",
+    "requirements": {
+        "yunohost": ">> 2.4.0"
+    },
+    "multi_instance": true,
+    "services": [
+        "nginx",
+        "php5-fpm",
+        "mysql"
+    ],
     "arguments": {
         "install" : [
             {
                 "name": "domain",
-                "type": "domain",
+		"type": "domain",
                 "ask": {
-                    "en": "Choose a domain for Odoo (Odoo will be installed on its root!)",
-                    "fr": "Choisissez un domaine pour Odoo (Odoo sera installé dans sa racine !)"
+                    "en": "Choose a domain name for ynhexample",
+                    "fr": "Choisissez un nom de domaine pour ynhexample"
                 },
-                "example": "odoo.domain.org"
+                "example": "example.com"
             },
-			{
+            {
+                "name": "path",
+		"type": "path",
+                "ask": {
+                    "en": "Choose a path for ynhexample",
+                    "fr": "Choisissez un chemin pour ynhexample"
+                },
+                "example": "/example",
+                "default": "/example"
+            },
+            {
                 "name": "admin",
+		"type": "user",
                 "ask": {
-                    "en": "Admin",
-					"fr": "Admin?"
-                }
-            },
-			{
-                "name": "admin_password",
-                "ask": {
-                    "en": "Choose a strong master admin password",
-					"fr": "Choisissez un mot de passe maître fort pour l'administration"
-                }
-            },
-			{
-                "name": "database_password",
-                "ask": {
-                    "en": "Choose a password for the 'admin' account on Odoo",
-					"fr": "Choisissez un mot de passe pour le compte 'admin' d'Odoo"
-                }
-            },
-			{
-                "name": "database_language",
-                "ask": {
-                    "en": "Choose a language for Odoo",
-					"fr": "Choisissez une langue pour Odoo"
+                    "en": "Choose an admin user",
+                    "fr": "Choisissez l’administrateur"
                 },
-                "choices": ["en_US", "fr_FR", "de_DE"],
-                "default": "fr_FR"
+                "example": "johndoe"
+            },
+            {
+                "name": "is_public",
+                "type": "boolean",
+                "ask": {
+                    "en": "Is it a public application?",
+                    "fr": "Est-ce une application publique ?"
+                },
+                "default": true
+            },
+            {
+                "name": "language",
+                "ask": {
+                    "en": "Choose the application language",
+                    "fr": "Choisissez la langue de l'application"
+                },
+                "choices": ["fr", "en"],
+                "default": "fr"
             }
         ]
     }

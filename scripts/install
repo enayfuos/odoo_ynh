@@ -13,14 +13,15 @@ set -eu
 # The app instance name is probably what you are interested the most, since this is
 # guaranteed to be unique. This is a good unique identifier to define installation path,
 # db names, ...
-app=$YNH_APP_INSTANCE_NAME
+app=odoo
 
 # Retrieve arguments
-domain=$YNH_APP_ARG_DOMAIN
-path=$YNH_APP_ARG_PATH
-admin=$YNH_APP_ARG_ADMIN
-is_public=$YNH_APP_ARG_IS_PUBLIC
-language=$YNH_APP_ARG_LANGUAGE
+domain=$1
+path=$2
+admin=$3
+admin_password=$4
+is_public=$5
+language=$6
 
 # Source YunoHost helpers
 source /usr/share/yunohost/helpers
@@ -31,62 +32,68 @@ ynh_app_setting_set "$app" is_public "$is_public"
 ynh_app_setting_set "$app" language "$language"
 
 # Check domain/path availability
+domain=${domain}"/"
 sudo yunohost app checkurl "${domain}${path}" -a "$app" \
     || ynh_die "Path not available: ${domain}${path}"
 
-# Copy source files
-src_path=/var/www/$app
-sudo mkdir -p $src_path
-sudo cp -a ../sources/. $src_path
+domain=${domain%/}
+sudo yunohost app setting $app domain -v $domain
 
-# Set permissions to app files
-# you may need to make some file and/or directory writeable by www-data (nginx user)
-sudo chown -R root: $src_path
+echo "Installing odoo"
+sudo yunohost app setting $app version -v $odoo_version
+sudo yunohost app setting $app instance -v "master"
+# Install Odoo
+# Prepare installation
+	sudo apt-get -y -qq install curl
 
-### MySQL (can be removed if not used) ###
-# If your app use a MySQL database you can use these lines to bootstrap
-# a database, an associated user and save the password in app settings.
-#
-# # Generate MySQL password and create database
-# dbuser=$app
-# dbname=$app
-# dbpass=$(ynh_string_random 12)
-# ynh_app_setting_set "$app" mysqlpwd "$dbpass"
-# ynh_mysql_create_db "$dbname" "$dbuser" "$dbpass"
-#
-# # Load initial SQL into the new database
-# ynh_mysql_connect_as "$dbuser" "$dbpass" "$dbname" \
-#     < "../sources/sql/mysql.init.sql"
-### MySQL end ###
+# Install Odoo
+	
+	sudo sh -c 'echo "deb http://nightly.odoo.com/9.0/nightly/deb/ ./" > /etc/apt/sources.list.d/odoo.list'
 
-# Modify Nginx configuration file and copy it to Nginx conf directory
-nginx_conf=../conf/nginx.conf
-sed -i "s@YNH_WWW_PATH@$path@g" $nginx_conf
-sed -i "s@YNH_WWW_ALIAS@$src_path/@g" $nginx_conf
-# If a dedicated php-fpm process is used:
-# Don't forget to modify ../conf/nginx.conf accordingly or your app will not work!
-# sed -i "s@YNH_WWW_APP@$app@g" $nginx_conf
-sudo cp $nginx_conf /etc/nginx/conf.d/$domain.d/$app.conf
+	sudo apt-get update
+	
+	# Initialize installation
+	sudo apt-get -y -qq install postgresql
+	sudo su - postgres -c "echo \"CREATE USER odoo WITH PASSWORD '$admin_password' CREATEDB;\" | psql" 2> /dev/null || true 
+	
+	sudo apt-get -y -qq install odoo
 
-### PHP (can be removed if not used) ###
-# If a dedicated php-fpm process is used:
-# Don't forget to modify ../conf/php-fpm.conf accordingly or your app will not work!
-#
-# # Modify PHP-FPM pool configuration and copy it to the pool directory
-# sed -i "s@YNH_WWW_APP@$app@g" ../conf/php-fpm.conf
-# sed -i "s@YNH_WWW_ALIAS@$src_path/@g" ../conf/php-fpm.conf
-# finalphpconf=/etc/php5/fpm/pool.d/$app.conf
-# sudo cp ../conf/php-fpm.conf $finalphpconf
-# sudo chown root: $finalphpconf
-# sudo chmod 644 $finalphpconf
-# sudo service php5-fpm reload
-### PHP end ###
+# Install wkhtmltopdf to print PDF reports
+	sudo apt-get -yf -qq install wkhtmltopdf
+	
+# Set admin password
+	sudo sed -i "s@ADMIN_PASSWORD@$admin_password@g" ../conf/openerp-server.conf
+	sudo cp ../conf/openerp-server.conf /etc/odoo/openerp-server.conf
+	sudo chown odoo:odoo /etc/odoo/openerp-server.conf
+	
+# Autoinstall the LDAP auth module
+	sudo sed -i "s@'auto_install': False@'auto_install': True@g" /usr/lib/python2.7/dist-packages/openerp/addons/auth_ldap/__openerp__.py
+	
+# Install oerplib to manage databases
+	#sudo pip install oerplib
+	
+# Add services
+	sudo yunohost service add postgresql
+	sudo yunohost service add odoo --log /var/log/odoo/odoo-server.log
+	sudo yunohost service stop odoo
+sudo yunohost service start odoo
 
-# If app is public, add url to SSOWat conf as skipped_uris
-if [[ $is_public -eq 1 ]]; then
-  # unprotected_uris allows SSO credentials to be passed anyway.
-  ynh_app_setting_set "$app" unprotected_uris "/"
-fi
+function exit_properly
+{
+    set +e
+    # TODO: uninstall db
+    sudo rm -f /etc/nginx/conf.d/$domain.d/$app.conf
+    sudo service nginx reload
+    exit 1
+}
+trap exit_properly ERR
+
+sudo cp ../conf/nginx.conf /etc/nginx/conf.d/$domain.d/$app.conf
+
+sudo yunohost app setting $app skipped_uris -v "/"
+
+sudo service nginx reload
+echo $?
 
 # Reload services
 sudo service nginx reload

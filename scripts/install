@@ -17,11 +17,12 @@ app=odoo
 
 # Retrieve arguments
 domain=$1
-path=$2
-admin=$3
-admin_password=$4
+path='/'
+admin=$2
+admin_password=$3
+database_password=$4
 is_public=$5
-language=$6
+database_language=$6
 
 # Source YunoHost helpers
 source /usr/share/yunohost/helpers

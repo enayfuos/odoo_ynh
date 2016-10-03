@@ -21,15 +21,13 @@ path='/'
 admin=$2
 admin_password=$3
 database_password=$4
-is_public=$5
-database_language=$6
+database_language=$5
 
 # Source YunoHost helpers
 source /usr/share/yunohost/helpers
 
 # Save app settings
 ynh_app_setting_set "$app" admin "$admin"
-ynh_app_setting_set "$app" is_public "$is_public"
 ynh_app_setting_set "$app" language "$language"
 
 # Check domain/path availability

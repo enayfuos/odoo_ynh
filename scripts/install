@@ -39,7 +39,7 @@ domain=${domain%/}
 sudo yunohost app setting $app domain -v $domain
 
 echo "Installing odoo"
-sudo yunohost app setting $app version -v $odoo_version
+sudo yunohost app setting $app version -v "9.0"
 sudo yunohost app setting $app instance -v "master"
 # Install Odoo
 # Prepare installation

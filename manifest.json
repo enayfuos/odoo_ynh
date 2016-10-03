@@ -8,7 +8,7 @@
     "developer": {
         "name": "scith"
     },
-    "multi_instance": "false",
+    "multi_instance": "true",
     "arguments": {
         "install" : [
             {
@@ -23,9 +23,9 @@
 			{
                 "name": "admin",
                 "ask": {
-                    "en": "admin",
-					"fr": "admin"
-                },
+                    "en": "Admin",
+					"fr": "Admin?"
+                }
             },
 			{
                 "name": "admin_password",
@@ -42,13 +42,13 @@
                 }
             },
 			{
-                "name": "database_lang",
+                "name": "database_language",
                 "ask": {
                     "en": "Choose a language for Odoo",
 					"fr": "Choisissez une langue pour Odoo"
                 },
                 "choices": ["en_US", "fr_FR", "de_DE"],
-                "default": "en_US"
+                "default": "fr_FR"
             }
         ]
     }

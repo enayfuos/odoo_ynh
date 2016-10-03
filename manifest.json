@@ -35,6 +35,22 @@
                 "example": "johndoe"
             },
             {
+                "name": "admin_password",
+                "type": "password",
+                "ask": {
+                    "en": "admin password",
+                    "fr": "Mot de passe admin"
+                }
+            },
+            {
+                "name": "database_password",
+                "type": "password",
+                "ask": {
+                    "en": "db password",
+                    "fr": "Mot de passe de la db"
+                }
+            },
+            {
                 "name": "is_public",
                 "type": "boolean",
                 "ask": {
@@ -44,13 +60,13 @@
                 "default": true
             },
             {
-                "name": "language",
+                "name": "database_language",
                 "ask": {
                     "en": "Choose the application language",
                     "fr": "Choisissez la langue de l'application"
                 },
-                "choices": ["fr", "en"],
-                "default": "fr"
+                "choices": ["fr_FR", "en_EN"],
+                "default": "fr_FR"
             }
         ]
     }

@@ -2,61 +2,55 @@
     "name": "Odoo",
     "id": "odoo",
     "description": {
-        "en": "Odoo en",
-        "fr": "Odoo fr"
+        "en": "Odoo is a suite of business apps (ERP: CRM, Accounting, Point of Sale, HR, Purchases...).",
+        "fr": "Odoo est une collection d'apps de gestion d'entreprise (ERP : CRM, Comptabilité, Point de Vente, RH, Achats, ...)."
     },
-    "multi_instance": false,
+    "developer": {
+        "name": "scith"
+    },
+    "multi_instance": "true",
     "arguments": {
         "install" : [
             {
                 "name": "domain",
-		"type": "domain",
+                "type": "domain",
                 "ask": {
-                    "en": "Choose a domain name for Odoo",
-                    "fr": "Choisissez un nom de domaine pour Odoo"
+                    "en": "Choose a domain for Odoo (Odoo will be installed on its root!)",
+                    "fr": "Choisissez un domaine pour Odoo (Odoo sera installé dans sa racine !)"
                 },
-                "example": "odoo.domain.com"
+                "example": "odoo.domain.org"
             },
-            {
-                "name": "admin",
-		"type": "user",
+			{
+                "name": "odoo_version",
                 "ask": {
-                    "en": "Choose an admin user",
-                    "fr": "Choisissez l’administrateur"
+                    "en": "Which version of Odoo do you want to install?",
+					"fr": "Quelle version d'Odoo souhaitez-vous installer ?"
                 },
-                "example": "johndoe"
+                "choices": ["8.0", "9.0"],
+                "default": "8.0"
             },
 			{
                 "name": "admin_password",
                 "ask": {
-                    "en": "Choose an admin password",
-                    "fr": "Choisissez le mot de passe de l’administrateur"
-                },
+                    "en": "Choose a strong master admin password",
+					"fr": "Choisissez un mot de passe maître fort pour l'administration"
+                }
             },
 			{
                 "name": "database_password",
                 "ask": {
-                    "en": "Choose a DB password",
-                    "fr": "Choisissez le mot de passe de la DB"
-                },
+                    "en": "Choose a password for the 'admin' account on Odoo",
+					"fr": "Choisissez un mot de passe pour le compte 'admin' d'Odoo"
+                }
             },
-            {
-                "name": "is_public",
-                "type": "boolean",
+			{
+                "name": "database_lang",
                 "ask": {
-                    "en": "Is it a public application?",
-                    "fr": "Est-ce une application publique ?"
+                    "en": "Choose a language for Odoo",
+					"fr": "Choisissez une langue pour Odoo"
                 },
-                "default": true
-            },
-            {
-                "name": "database_language",
-                "ask": {
-                    "en": "Choose the application language",
-                    "fr": "Choisissez la langue de l'application"
-                },
-                "choices": ["fr_FR", "en_EN"],
-                "default": "fr_FR"
+                "choices": ["en_US", "fr_FR", "de_DE"],
+                "default": "en_US"
             }
         ]
     }

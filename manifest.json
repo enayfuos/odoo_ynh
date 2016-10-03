@@ -6,17 +6,11 @@
         "en": "Odoo application.",
         "fr": "Odoo pour YunoHost."
     },
-    "url": "https://example.com",
     "license": "free",
-    "maintainer": {
-        "name": "John doe",
-        "email": "john.doe@example.com",
-        "url": "http://example.com"
-    },
     "requirements": {
         "yunohost": ">> 2.4.0"
     },
-    "multi_instance": true,
+    "multi_instance": false,
     "services": [
         "nginx",
         "php5-fpm",

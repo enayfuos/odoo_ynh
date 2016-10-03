@@ -17,7 +17,6 @@
     "multi_instance": false,
     "services": [
         "nginx",
-        "postgresql",
     ],
     "arguments": {
         "install" : [

@@ -8,7 +8,7 @@
     "developer": {
         "name": "scith"
     },
-    "multi_instance": "true",
+    "multi_instance": "false",
     "arguments": {
         "install" : [
             {
@@ -21,13 +21,11 @@
                 "example": "odoo.domain.org"
             },
 			{
-                "name": "odoo_version",
+                "name": "admin",
                 "ask": {
-                    "en": "Which version of Odoo do you want to install?",
-					"fr": "Quelle version d'Odoo souhaitez-vous installer ?"
+                    "en": "admin",
+					"fr": "admin"
                 },
-                "choices": ["8.0", "9.0"],
-                "default": "8.0"
             },
 			{
                 "name": "admin_password",

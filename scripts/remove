@@ -1,34 +1,32 @@
 #!/bin/bash
 
 # See comments in install script
-app=$YNH_APP_INSTANCE_NAME
+app=odoo
 
 # Source YunoHost helpers
 source /usr/share/yunohost/helpers
 
 # Retrieve app settings
-domain=$(ynh_app_setting_get "$app" domain)
+domain=$(sudo yunohost app setting $app domain)
 
-# Remove sources
-sudo rm -rf /var/www/$app
+database=${domain//./-}
+instance=$(sudo yunohost app setting $app instance)
 
-# Remove nginx configuration file
-sudo rm -f /etc/nginx/conf.d/$domain.d/$app.conf
+# Remove database
+	sudo su -c "dropdb $database" postgres
 
-### PHP (remove if not used) ###
-# If a dedicated php-fpm process is used:
-# sudo rm -f /etc/php5/fpm/pool.d/$app.conf
-# sudo service php5-fpm reload
-### PHP end ###
+# If removing master instance, remove Odoo.
+	if [ "$instance" = "master" ]; then
+		# Remove Odoo
+			sudo yunohost service stop odoo
+			sudo apt-get remove odoo -y
+			sudo apt-get remove wkhtmltopdf -y
+			sudo yunohost service remove odoo
+	fi
+	
+# Remove NGINX conf
+	sudo rm /etc/nginx/conf.d/$domain.d/$app.conf
 
-### MySQL (remove if not used) ###
-# If a MySQL database is used:
-# # Drop MySQL database and user
-# dbname=$app
-# dbuser=$app
-# ynh_mysql_drop_db "$dbname" || true
-# ynh_mysql_drop_user "$dbuser" || true
-### MySQL end ###
-
-# Reload nginx service
-sudo service nginx reload
+# Reload
+	sudo service nginx reload
+	sudo yunohost app ssowatconf 

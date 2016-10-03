@@ -14,10 +14,10 @@
     "requirements": {
         "yunohost": ">> 2.4.0"
     },
-    "multi_instance": true,
+    "multi_instance": false,
     "services": [
         "nginx",
-        "postgres",
+        "postgresql",
     ],
     "arguments": {
         "install" : [

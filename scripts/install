@@ -37,45 +37,50 @@ sudo yunohost app checkurl "${domain}${path}" -a "$app" \
 
 domain=${domain%/}
 sudo yunohost app setting $app domain -v $domain
+if [ -f /usr/bin/openerp-server ]; then
+	echo "Odoo is already installed, switching to multi-instances"
+	sudo yunohost app setting $app instance -v "slave"
+	
+else
+	echo "Installing odoo"
+	sudo yunohost app setting $app version -v "9.0"
+	sudo yunohost app setting $app instance -v "master"
+	# Install Odoo
+	# Prepare installation
+		sudo apt-get -y -qq install curl
 
-echo "Installing odoo"
-sudo yunohost app setting $app version -v "9.0"
-sudo yunohost app setting $app instance -v "master"
-# Install Odoo
-# Prepare installation
-	sudo apt-get -y -qq install curl
+	# Install Odoo
 
-# Install Odoo
-	
-	sudo sh -c 'echo "deb http://nightly.odoo.com/9.0/nightly/deb/ ./" > /etc/apt/sources.list.d/odoo.list'
+		sudo sh -c 'echo "deb http://nightly.odoo.com/9.0/nightly/deb/ ./" > /etc/apt/sources.list.d/odoo.list'
 
-	sudo apt-get update
-	
-	# Initialize installation
-	sudo apt-get -y -qq install postgresql
-	sudo su - postgres -c "echo \"CREATE USER odoo WITH PASSWORD '$admin_password' CREATEDB;\" | psql" 2> /dev/null || true 
-	
-	sudo apt-get -y -qq install odoo
+		sudo apt-get update
 
-# Install wkhtmltopdf to print PDF reports
-	sudo apt-get -yf -qq install wkhtmltopdf
-	
-# Set admin password
-	sudo sed -i "s@ADMIN_PASSWORD@$admin_password@g" ../conf/openerp-server.conf
-	sudo cp ../conf/openerp-server.conf /etc/odoo/openerp-server.conf
-	sudo chown odoo:odoo /etc/odoo/openerp-server.conf
-	
-# Autoinstall the LDAP auth module
-	sudo sed -i "s@'auto_install': False@'auto_install': True@g" /usr/lib/python2.7/dist-packages/openerp/addons/auth_ldap/__openerp__.py
-	
-# Install oerplib to manage databases
-	#sudo pip install oerplib
-	
-# Add services
-	sudo yunohost service add postgresql
-	sudo yunohost service add odoo --log /var/log/odoo/odoo-server.log
-	sudo yunohost service stop odoo
-sudo yunohost service start odoo
+		# Initialize installation
+		sudo apt-get -y -qq install postgresql
+		sudo su - postgres -c "echo \"CREATE USER odoo WITH PASSWORD '$admin_password' CREATEDB;\" | psql" 2> /dev/null || true 
+
+		sudo apt-get -y -qq install odoo
+
+	# Install wkhtmltopdf to print PDF reports
+		sudo apt-get -yf -qq install wkhtmltopdf
+
+	# Set admin password
+		sudo sed -i "s@ADMIN_PASSWORD@$admin_password@g" ../conf/openerp-server.conf
+		sudo cp ../conf/openerp-server.conf /etc/odoo/openerp-server.conf
+		sudo chown odoo:odoo /etc/odoo/openerp-server.conf
+
+	# Autoinstall the LDAP auth module
+		sudo sed -i "s@'auto_install': False@'auto_install': True@g" /usr/lib/python2.7/dist-packages/openerp/addons/auth_ldap/__openerp__.py
+
+	# Install oerplib to manage databases
+		#sudo pip install oerplib
+
+	# Add services
+		sudo yunohost service add postgresql
+		sudo yunohost service add odoo --log /var/log/odoo/odoo-server.log
+		sudo yunohost service stop odoo
+		sudo yunohost service start odoo
+fi
 
 function exit_properly
 {

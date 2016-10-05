@@ -29,11 +29,13 @@ ynh_app_setting_set "$app" language "$database_language"
 
 # Check domain/path availability
 domain=${domain}"/"
-sudo yunohost app checkurl ${domain} -a $app \
-    || ynh_die "Path not available: ${domain}"
+sudo yunohost app checkurl $domain -a $app \
+	|| (echo "Path not available: $domain" && exit 1)
 
+# Remove trailing "/" for next commands
 domain=${domain%/}
 sudo yunohost app setting $app domain -v $domain
+
 if [ -f /usr/bin/openerp-server ]; then
 	echo "Odoo is already installed, switching to multi-instances"
 	sudo yunohost app setting $app instance -v "slave"

@@ -23,17 +23,14 @@ admin_password=$3
 database_password=$4
 database_language=$5
 
-# Source YunoHost helpers
-source /usr/share/yunohost/helpers
-
 # Save app settings
 ynh_app_setting_set "$app" admin "$admin"
 ynh_app_setting_set "$app" language "$database_language"
 
 # Check domain/path availability
 domain=${domain}"/"
-sudo yunohost app checkurl "${domain}${path}" -a "$app" \
-    || ynh_die "Path not available: ${domain}${path}"
+sudo yunohost app checkurl ${domain} -a $app \
+    || ynh_die "Path not available: ${domain}"
 
 domain=${domain%/}
 sudo yunohost app setting $app domain -v $domain
@@ -42,6 +39,10 @@ if [ -f /usr/bin/openerp-server ]; then
 	sudo yunohost app setting $app instance -v "slave"
 	
 else
+	sudo yunohost app checkport 8069
+	if [[ ! $? -eq 0 ]]; then
+	  exit 1
+	fi
 	echo "Installing odoo"
 	sudo yunohost app setting $app version -v "9.0"
 	sudo yunohost app setting $app instance -v "master"
@@ -98,6 +99,3 @@ sudo yunohost app setting $app skipped_uris -v "/"
 
 sudo service nginx reload
 echo $?
-
-# Reload services
-sudo service nginx reload

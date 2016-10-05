@@ -23,10 +23,6 @@ admin_password=$3
 database_password=$4
 database_language=$5
 
-# Save app settings
-ynh_app_setting_set "$app" admin "$admin"
-ynh_app_setting_set "$app" language "$database_language"
-
 # Check domain/path availability
 domain=${domain}"/"
 sudo yunohost app checkurl $domain -a $app \
